@@ -2,7 +2,7 @@ import mlx.nn as nn
 import mlx.core as mx
 from mlx_lm.tokenizer_utils import TokenizerWrapper
 from transformers import PreTrainedTokenizer
-from mlx_lm.interpretability.patching import PatchedLayer, patch_dict, patch_layers
+from patching import PatchedLayer, patch_layers
 from mlx_lm import load, generate
 
 import plotly.graph_objects as go
@@ -42,10 +42,6 @@ def logit_lens(model: nn.Module,
         layer_out = mx.exp(layer_out)
         probs.append(layer_out.max(axis=1).tolist())
         preds.append(tokenizer.convert_ids_to_tokens(layer_out.argmax(axis=1).tolist()))
-        #print(f"Layer {i} prediction ({layer_pred.max(axis=1).tolist():.4f}): {tokenizer.decode([layer_pred.argmax(axis=1).tolist()])}")
-    # pred = out[0] # (seq_len, vocab_size)
-    # pred = pred - mx.logsumexp(pred, axis=1)
-    #print(f"Final prediction ({pred.max(axis=1).tolist():.4f}): {tokenizer.decode([pred.argmax(axis=1).tolist()])}")
     create_lens_heatmap(np.array(input_tokens), np.array(preds), np.array(probs), "Probability").show()
 
 def create_lens_heatmap(input_seq, preds, stats, stat_name):
@@ -57,19 +53,11 @@ def create_lens_heatmap(input_seq, preds, stats, stat_name):
     :return: Plotly Figure object
     """
     num_layers, seq_length = preds.shape
-    print(input_seq)
-    print(preds[0])
-    print(preds[-1])
-    # z_data = np.vstack((np.zeros(seq_length), stats))  # Add a row for input sequence
     z_data = stats
     text_data = preds
     # Hack to ensure that Plotly doesn't de-duplicate the x-axis labels
     x_labels = [x + "\u200c" * i for i, x in enumerate(input_seq)]
     x_top_labels = x_labels[1:]
-    # text_data = np.vstack((input_seq, preds))
-    # hover_text = [["Input" for _ in range(seq_length)]] + \
-                #  [[f"Layer: {i}<br>Token: {preds[i-1, j]}<br>{stat_name}: {stats[i-1, j]:.2f}"
-                #    for j in range(seq_length)] for i in range(1, num_layers + 1)]
     hover_text = [[f"Layer: {i}<br>Token: {preds[i, j]}<br>{stat_name}: {stats[i, j]:.2f}"
                    for j in range(seq_length)] for i in range(0, num_layers)]
     
