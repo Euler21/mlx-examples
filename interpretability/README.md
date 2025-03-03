@@ -2,16 +2,24 @@
 Tooling for working with model internals, including activation patching, steering, and SAEs.
 
 ### Setup
-TODO
+```bash
+pip install -e .
+```
 
-### Example
+### CLI
+Compute and store activations for any component of any model via the CLI:
+```bash
+mlx_interp.generate --prompt "Your prompt here" --model mlx-community/gemma-2-2b --activations-path "model.layers.*.mlp" --activations-output-file activations.safetensors
+```
+
+### Usage
 
 ```python
 import mlx.core as mx
-from mlx_lm import load, generate
+from mlx_lm import load
 
-from activation_cache import ActivationCache
-from patching import PatchedLayer, SteerablePatchedLayer, patch_module, unpatch_module
+from mlx_interp.activation_cache import ActivationCache
+from mlx_interp.patching import PatchedLayer, SteerablePatchedLayer, patch_module, unpatch_module
 
 cache = ActivationCache()
 model, tokenizer = load("mlx-community/gemma-2-2b")

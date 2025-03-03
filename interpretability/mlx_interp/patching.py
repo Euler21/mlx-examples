@@ -2,8 +2,8 @@ import mlx.nn as nn
 import mlx.core as mx
 
 from typing import Any, Type, TypeVar, Dict, List, override
-from activation_cache import ActivationCache
-from utils import process_module_paths
+from .activation_cache import ActivationCache
+from .utils import process_module_paths
 
 
 class PatchedLayer(nn.Module):

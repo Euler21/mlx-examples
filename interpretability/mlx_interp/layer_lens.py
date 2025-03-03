@@ -2,7 +2,7 @@ import mlx.nn as nn
 import mlx.core as mx
 from mlx_lm.tokenizer_utils import TokenizerWrapper
 from transformers import PreTrainedTokenizer
-from patching import PatchedLayer, patch_layers
+from .patching import PatchedLayer, patch_layers
 from mlx_lm import load, generate
 
 import plotly.graph_objects as go

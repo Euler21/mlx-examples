@@ -36,7 +36,8 @@ class ActivationCache:
         Stores the prompt and clears the cache.
         """
         self.clear()
-        self.model_name = model_name
+        if model_name:
+            self.model_name = model_name
         self.prompt = prompt
 
     def save_safetensors(self, file: str):
@@ -88,5 +89,5 @@ class ActivationCache:
     ):
         self.prepare_for_prompt(prompt, model_name)
         inputs = mx.array(tokenizer.encode(prompt))[None]
-        model(inputs)[0]
+        model(inputs)
         self.remove_batch_dim()
